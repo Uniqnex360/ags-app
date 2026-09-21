@@ -61,7 +61,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 current_url = config.get_main_option("sqlalchemy.url")
-if current_url and current_url != "sqlite+aiosqlite:///./pvr.db":
+if current_url and current_url != "sqlite+aiosqlite:///./ags.db":
     config.set_main_option("sqlalchemy.url", _clean_url_for_alembic(current_url))
 elif getattr(settings, "DATABASE_URL", None):
     config.set_main_option(
@@ -95,7 +95,7 @@ def do_run_migrations(connection):
 
 async def run_async_migrations() -> None:
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        {"sqlalchemy.url": config.get_main_option("sqlalchemy.url")},
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
