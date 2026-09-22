@@ -70,12 +70,13 @@ class MovieRepository:
         result = await self._session.execute(stmt)
         rows = result.all()
 
+        now = datetime.now(timezone.utc)
         showtimes: list[ShowtimeSummaryDTO] = []
         for st, screen, cinema, movie in rows:
             cinema_tz = ZoneInfo(cinema.timezone)
             st_date_local = st.starts_at.astimezone(cinema_tz).date()
 
-            if st_date_local == target_date:
+            if st_date_local == target_date and st.starts_at > now:
                 showtimes.append(
                     ShowtimeSummaryDTO(
                         id=st.id,
